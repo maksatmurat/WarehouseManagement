@@ -1,40 +1,68 @@
-﻿//using Infrastructure.Repositories.Contracts;
-//using Microsoft.AspNetCore.Http.HttpResults;
-//using Microsoft.AspNetCore.Mvc;
+﻿using Application.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using System.Reflection;
 
-//namespace Server.Controllers;
+namespace Server.Controllers;
 
-//[Route("api/[controller]")]
-//[ApiController]
-//public class GenericController<T>(IGenericRepository<T> genericRepositoryInterface) :
-//        Controller where T : class
-//{
-//    [HttpGet("all")]
-//    public async Task<IActionResult> GetAll() => Ok(await genericRepositoryInterface.GetAll());
+[ApiController]
+[Route("api/[controller]")]
+public class GenericController<TEntity> : ControllerBase where TEntity : class
+{
+    private readonly IGenericService<TEntity> _service;
+    public GenericController(IGenericService<TEntity> service)
+    {
+        _service = service;
+    }
+    [HttpGet]
+    public async Task<IActionResult> GetAll() => Ok(await _service.GetAllAsync());
 
-//    [HttpDelete("delete/{id}")]
-//    public async Task<IActionResult> DeleteById(int id)
-//    {
-//        var result = await genericRepositoryInterface.DeleteById(id);
-//        return Ok(result);
-//    }
+    [HttpGet("{id}")]
+    public async Task<IActionResult> Get(Guid id)
+    {
+        var entity = await _service.GetByIdAsync(id);
+        if (entity == null) return NotFound();
+        return Ok(entity);
+    }
+    [HttpGet("active")]
+    public async Task<IActionResult> GetActive()
+    {
+        var entities = await _service.GetAllAsync();
 
-//    [HttpGet("single/{id}")]
-//    public async Task<IActionResult> GetById(int id)
-//    {
-//        if (id <= 0) return BadRequest("Invalid ID provided.");
-//        return Ok(await genericRepositoryInterface.GetById(id));
-//    }
-//    [HttpPost("add")]
-//    public async Task<IActionResult> Add(T model)
-//    {
-//        if (model is null) return BadRequest("Bad request made");
-//        return Ok(await genericRepositoryInterface.Insert(model));
-//    }
-//    [HttpPut("update")]
-//    public async Task<IActionResult> Update(T model)
-//    {
-//        if (model is null) return BadRequest("Bad request made");
-//        return Ok(await genericRepositoryInterface.Update(model));
-//    }
-//}
+        // Проверяем, есть ли у типа свойство IsActive
+        var prop = typeof(TEntity).GetProperty("IsActive", BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+        if (prop == null)
+            return BadRequest("У этой сущности нет свойства IsActive");
+
+        var activeEntities = entities
+            .Where(e => prop.GetValue(e) is bool b && b)
+            .ToList();
+
+        return Ok(activeEntities);
+    }
+    [HttpPost]
+    public async Task<IActionResult> Create(TEntity entity)
+    {
+        var created = await _service.CreateAsync(entity);
+        return CreatedAtAction(nameof(Get), new { id = GetEntityId(created) }, created);
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id, TEntity entity)
+    {
+        var updated = await _service.UpdateAsync(id, entity);
+        return Ok(updated);
+    }
+
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(Guid id)
+    {
+        var success = await _service.DeleteAsync(id);
+        return success ? NoContent() : NotFound();
+    }
+
+    private object GetEntityId(TEntity entity)
+    {
+        var prop = typeof(TEntity).GetProperty("Id");
+        return prop?.GetValue(entity) ?? Guid.Empty;
+    }
+}

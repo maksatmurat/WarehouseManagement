@@ -25,7 +25,17 @@ public class GenericRepository<TEntity>: IGenericRepository<TEntity>
     public async Task AddAsync(TEntity entity) => await _dbSet.AddAsync(entity);
 
     public void Update(TEntity entity) => _dbSet.Update(entity);
+    public void Detach(TEntity entity)
+    {
+        var entry = _context.Entry(entity);
+        if (entry != null)
+            entry.State = EntityState.Detached;
+    }
 
+    public void SetValues(TEntity existingEntity, TEntity updatedEntity)
+    {
+        _context.Entry(existingEntity).CurrentValues.SetValues(updatedEntity);
+    }
     public void Remove(TEntity entity) => _dbSet.Remove(entity);
 
     public async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate) =>

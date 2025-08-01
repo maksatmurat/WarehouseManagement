@@ -1,7 +1,6 @@
 ﻿using Application.Interfaces;
 using Domain.Entities;
 using Infrastructure.Repositories.Contracts;
-using static Application.Services.ClientService;
 
 namespace Application.Services;
 
@@ -58,9 +57,6 @@ public class ClientService : GenericService<Client>, IClientService
         return true;
     }
 
-    public Task<List<Client>> GetActiveClientsAsync()
-    {
-        throw new NotImplementedException();
-    }
+    
 }
 

@@ -13,4 +13,7 @@ public interface IGenericRepository<TEntity> where TEntity : class
     void Remove(TEntity entity);
     Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> predicate);
     Task SaveChangesAsync();
+    void Detach(TEntity entity);
+    void SetValues(TEntity existingEntity, TEntity updatedEntity);
+
 }

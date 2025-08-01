@@ -70,8 +70,4 @@ public class UnitOfMeasureService : GenericService<UnitOfMeasure>, IUnitOfMeasur
         return true;
     }
 
-    public Task<List<UnitOfMeasure>> GetActiveUnitsAsync()
-    {
-        throw new NotImplementedException();
-    }
 }

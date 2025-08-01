@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces;
 using Infrastructure.Repositories.Contracts;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services;
 
@@ -30,9 +31,9 @@ public class GenericService<TEntity> : IGenericService<TEntity> where TEntity : 
         var existing = await _repository.GetByIdAsync(id);
         if (existing == null) throw new KeyNotFoundException("Entity not found.");
 
-        _repository.Update(entity);
+        _repository.SetValues(existing,entity);
         await _repository.SaveChangesAsync();
-        return entity;
+        return existing;
     }
 
     public virtual async Task<bool> DeleteAsync(Guid id)
