@@ -7,6 +7,12 @@ public class WarehouseDbContext : DbContext
 {
     public WarehouseDbContext(DbContextOptions<WarehouseDbContext> options) : base(options) { }
 
+    //Authentication /Role /System Roles 
+    public DbSet<ApplicationUser> ApplicationUsers { get; set; }
+    public DbSet<SystemRole> SystemRoles { get; set; }
+    public DbSet<UserRole> UserRoles { get; set; }
+    public DbSet<RefreshTokenInfo> RefreshTokenInfos { get; set; }
+
     public DbSet<Resource> Resources => Set<Resource>();
     public DbSet<UnitOfMeasure> Units => Set<UnitOfMeasure>();
     public DbSet<Client> Clients => Set<Client>();
@@ -16,8 +22,10 @@ public class WarehouseDbContext : DbContext
     public DbSet<ShipmentDocument> ShipmentDocuments => Set<ShipmentDocument>();
     public DbSet<ShipmentResource> ShipmentResources => Set<ShipmentResource>();
 
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
         // Автогенерация Guid для всех Id
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
@@ -38,7 +46,7 @@ public class WarehouseDbContext : DbContext
                 isActiveProperty.SetDefaultValue(true);
             }
         }
-        var adminId = Guid.NewGuid();
+        var adminId = new Guid("11111111-1111-1111-1111-111111111111");
         modelBuilder.Entity<ApplicationUser>().HasData(
             new ApplicationUser
             {

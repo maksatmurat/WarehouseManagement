@@ -26,7 +26,8 @@ namespace Infrastructure.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
 
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
@@ -39,12 +40,12 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ApplicationUser");
+                    b.ToTable("ApplicationUsers");
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("95049886-0868-42b3-98cf-d20dc8f5055d"),
+                            Id = new Guid("11111111-1111-1111-1111-111111111111"),
                             Email = "admin@example.com",
                             Fullname = "Super Admin",
                             Password = "admin123"
@@ -57,6 +58,11 @@ namespace Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
                         .HasDefaultValueSql("NEWID()");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<decimal>("Quantity")
                         .HasColumnType("decimal(18,2)");
@@ -157,6 +163,25 @@ namespace Infrastructure.Data.Migrations
                     b.ToTable("ReceiptResources");
                 });
 
+            modelBuilder.Entity("Domain.Entities.RefreshTokenInfo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Token")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RefreshTokenInfos");
+                });
+
             modelBuilder.Entity("Domain.Entities.Resource", b =>
                 {
                     b.Property<Guid>("Id")
@@ -254,7 +279,7 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SystemRole");
+                    b.ToTable("SystemRoles");
 
                     b.HasData(
                         new
@@ -309,14 +334,14 @@ namespace Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserRole");
+                    b.ToTable("UserRoles");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
                             RoleId = 1,
-                            UserId = new Guid("95049886-0868-42b3-98cf-d20dc8f5055d")
+                            UserId = new Guid("11111111-1111-1111-1111-111111111111")
                         });
                 });
 

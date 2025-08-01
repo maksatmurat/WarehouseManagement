@@ -1,11 +1,8 @@
-using Server.Configuration;
+using Calabonga.AspNetCore.AppDefinitions;
+
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.AddAppDefinitions();
-
-
+builder.AddDefinitions(typeof(Program));
 var app = builder.Build();
-
-app.UseAppDefinitions();
+app.UseDefinitions();
 app.Run();

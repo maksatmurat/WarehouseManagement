@@ -14,17 +14,17 @@ namespace Infrastructure.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "ApplicationUser",
+                name: "ApplicationUsers",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
                     Fullname = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ApplicationUser", x => x.Id);
+                    table.PrimaryKey("PK_ApplicationUsers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -55,6 +55,20 @@ namespace Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RefreshTokenInfos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshTokenInfos", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Resources",
                 columns: table => new
                 {
@@ -68,7 +82,7 @@ namespace Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "SystemRole",
+                name: "SystemRoles",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -77,7 +91,7 @@ namespace Infrastructure.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_SystemRole", x => x.Id);
+                    table.PrimaryKey("PK_SystemRoles", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -94,7 +108,7 @@ namespace Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserRole",
+                name: "UserRoles",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -104,7 +118,7 @@ namespace Infrastructure.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserRole", x => x.Id);
+                    table.PrimaryKey("PK_UserRoles", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -221,12 +235,12 @@ namespace Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "ApplicationUser",
+                table: "ApplicationUsers",
                 columns: new[] { "Id", "Email", "Fullname", "Password" },
-                values: new object[] { new Guid("25af36b5-0ccf-460c-a880-335d8e5eb6c8"), "admin@example.com", "Super Admin", "admin123" });
+                values: new object[] { new Guid("11111111-1111-1111-1111-111111111111"), "admin@example.com", "Super Admin", "admin123" });
 
             migrationBuilder.InsertData(
-                table: "SystemRole",
+                table: "SystemRoles",
                 columns: new[] { "Id", "Name" },
                 values: new object[,]
                 {
@@ -235,9 +249,9 @@ namespace Infrastructure.Data.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "UserRole",
+                table: "UserRoles",
                 columns: new[] { "Id", "RoleId", "UserId" },
-                values: new object[] { 1, 1, new Guid("25af36b5-0ccf-460c-a880-335d8e5eb6c8") });
+                values: new object[] { 1, 1, new Guid("11111111-1111-1111-1111-111111111111") });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Balances_ResourceId_UnitOfMeasureId",
@@ -320,7 +334,7 @@ namespace Infrastructure.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ApplicationUser");
+                name: "ApplicationUsers");
 
             migrationBuilder.DropTable(
                 name: "Balances");
@@ -329,13 +343,16 @@ namespace Infrastructure.Data.Migrations
                 name: "ReceiptResources");
 
             migrationBuilder.DropTable(
+                name: "RefreshTokenInfos");
+
+            migrationBuilder.DropTable(
                 name: "ShipmentResources");
 
             migrationBuilder.DropTable(
-                name: "SystemRole");
+                name: "SystemRoles");
 
             migrationBuilder.DropTable(
-                name: "UserRole");
+                name: "UserRoles");
 
             migrationBuilder.DropTable(
                 name: "ReceiptDocuments");
