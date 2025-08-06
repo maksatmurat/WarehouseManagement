@@ -1,0 +1,6 @@
+﻿body {
+    background-color: powderblue;
+    --webkit-background-size: cover;
+    --moz-background-size: cover;
+    background-size: cover;
+}

@@ -1,5 +1,5 @@
 ﻿
-namespace Application.DTOs;
+namespace Domain.DTOs;
 
 public class Login : AccountBase { };
 

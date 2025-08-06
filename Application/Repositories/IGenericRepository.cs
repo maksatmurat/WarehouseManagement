@@ -1,7 +1,6 @@
-﻿using Domain.Entities;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
-namespace Infrastructure.Repositories.Contracts;
+namespace Application.Repositories;
 
 public interface IGenericRepository<TEntity> where TEntity : class
 {

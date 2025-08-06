@@ -1,21 +1,22 @@
 ﻿
 using Application.Interfaces;
+using Application.Repositories;
 using Domain.Entities;
-using Infrastructure.Repositories.Contracts;
 
 namespace Application.Services;
 
-public class ResourceService : IGenericService<Resource>
+public class ResourceService : GenericService<Resource>, IResourceService
 {
     private readonly IGenericRepository<Resource> _repo;
     private readonly IGenericRepository<Balance> _balanceRepo;
     private readonly IGenericRepository<ReceiptResource> _receiptResRepo;
     private readonly IGenericRepository<ShipmentResource> _shipmentResRepo;
+
     public ResourceService(
     IGenericRepository<Resource> repo,
     IGenericRepository<Balance> balanceRepo,
     IGenericRepository<ReceiptResource> receiptResRepo,
-    IGenericRepository<ShipmentResource> shipmentResRepo)
+    IGenericRepository<ShipmentResource> shipmentResRepo): base(repo)
     {
         _repo = repo;
         _balanceRepo = balanceRepo;
@@ -23,11 +24,11 @@ public class ResourceService : IGenericService<Resource>
         _shipmentResRepo = shipmentResRepo;
     }
 
-    public async Task<List<Resource>> GetAllAsync() => await _repo.GetAllAsync();
+    public override async Task<List<Resource>> GetAllAsync() => await _repo.GetAllAsync();
 
-    public async Task<Resource?> GetByIdAsync(Guid id) => await _repo.GetByIdAsync(id);
+    public override async Task<Resource?> GetByIdAsync(Guid id) => await _repo.GetByIdAsync(id);
 
-    public async Task<Resource> CreateAsync(Resource entity)
+    public override async Task<Resource> CreateAsync(Resource entity)
     {
         bool exists = await _repo.ExistsAsync(r => r.Name == entity.Name && r.IsActive);
         if (exists)
@@ -38,7 +39,7 @@ public class ResourceService : IGenericService<Resource>
         return entity;
     }
 
-    public async Task<Resource> UpdateAsync(Guid id, Resource entity)
+    public override async Task<Resource> UpdateAsync(Guid id, Resource entity)
     {
         var existing = await _repo.GetByIdAsync(id);
         if (existing == null) throw new KeyNotFoundException("Ресурс не найден.");
@@ -55,7 +56,7 @@ public class ResourceService : IGenericService<Resource>
         return existing;
     }
 
-    public async Task<bool> DeleteAsync(Guid id)
+    public override async Task<bool> DeleteAsync(Guid id)
     {
         var entity = await _repo.GetByIdAsync(id);
         if (entity == null) return false;

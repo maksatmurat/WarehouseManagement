@@ -1,10 +1,11 @@
 ﻿using Application.Interfaces;
+using Application.Repositories;
 using Domain.Entities;
-using Infrastructure.Repositories.Contracts;
 
 namespace Application.Services;
 
 public class BalanceService : GenericService<Balance>, IBalanceService
 {
-    public BalanceService(IGenericRepository<Balance> repo) : base(repo) { }
+    public BalanceService(IGenericRepository<Balance> repository)
+        : base(repository) { }
 }

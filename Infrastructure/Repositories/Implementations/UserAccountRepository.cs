@@ -1,4 +1,4 @@
-﻿using Application.DTOs;
+﻿using Domain.DTOs;
 using Domain.Entities;
 using Domain.Responses;
 using Infrastructure.Data;
@@ -7,12 +7,10 @@ using Infrastructure.Repositories.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.VisualBasic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using Constants=Infrastructure.Helpers.Constants;
 
 namespace Infrastructure.Repositories.Implementations;
 
@@ -37,7 +35,7 @@ public class UserAccountRepository(IOptions<JwtSection> config, WarehouseDbConte
         {
             var createAdminRole = await AddToDatabase(new SystemRole()
             {
-                Name = Helpers.Constants.Admin,
+                Name = Constants.Admin,
             });
             return new GeneralResponse(true, "Account created!");
         }
@@ -47,7 +45,7 @@ public class UserAccountRepository(IOptions<JwtSection> config, WarehouseDbConte
         if (checkUserRole is null)
         {
 
-            response = await AddToDatabase(new SystemRole() { Name = Helpers.Constants.Admin });
+            response = await AddToDatabase(new SystemRole() { Name = Constants.Admin });
             await AddToDatabase(new UserRole() { RoleId = response.Id, UserId = applicationUser.Id });
         }
         else

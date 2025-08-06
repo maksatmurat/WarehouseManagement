@@ -1,0 +1,45 @@
+﻿@typeparam TModel where TModel : class
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            @foreach (var prop in typeof(TModel).GetProperties())
+            {
+                if (prop.Name == "Id") continue;
+                <th>@prop.Name</th>
+            }
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Items != null && Items.Any())
+        {
+            @foreach (var item in Items)
+            {
+                <tr>
+                    @foreach (var prop in typeof(TModel).GetProperties())
+                    {
+                        if (prop.Name == "Id") continue;
+                        <td>@(prop.GetValue(item)?.ToString())</td>
+                    }
+                    <td>
+                        <button class="btn btn-sm btn-primary me-1" @onclick="() => OnEdit.InvokeAsync(item)">Düzenle</button>
+                        <button class="btn btn-sm btn-danger" @onclick="() => OnDelete.InvokeAsync(item)">Sil</button>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="100%">Kayıt yok</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    [Parameter] public List<TModel> Items { get; set; } = new();
+    [Parameter] public EventCallback<TModel> OnEdit { get; set; }
+    [Parameter] public EventCallback<TModel> OnDelete { get; set; }
+}

@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces;
+using Application.Repositories;
 using Application.Services;
 using Calabonga.AspNetCore.AppDefinitions;
 using Infrastructure.Data;
@@ -94,9 +95,10 @@ public class CommonDefinition:AppDefinition
         #endregion
 
         builder.Services.AddScoped<IUserAccount, UserAccountRepository>();
-        
+
         builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-        
+
+
         builder.Services.AddScoped(typeof(IGenericService<>), typeof(GenericService<>));
         builder.Services.AddScoped<IClientService, ClientService>();
         builder.Services.AddScoped<IUnitOfMeasureService, UnitOfMeasureService>();

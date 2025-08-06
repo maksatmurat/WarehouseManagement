@@ -6,5 +6,23 @@
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using Microsoft.AspNetCore.Components.WebAssembly.Http
 @using Microsoft.JSInterop
-@using Client
-@using Client.Layout
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Authorization
+@using Application.Helpers;
+@using Application.Interfaces;
+@using Application.Services;
+@using Domain.Entities;
+@using Domain.DTOs;
+@using Client.Shared.Layout
+@using Client.Shared
+@using Client.Components
+@using System.Reflection
+@using System.Linq.Expressions
+@using Microsoft.AspNetCore.Components
+
+
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager NavManager
+@inject IUserAccountService accountService
+
+@inject IJSRuntime JSRuntime

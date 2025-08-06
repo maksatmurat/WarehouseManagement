@@ -1,12 +1,75 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-    <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <p role="alert">Sorry, there's nothing at this address.</p>
-        </LayoutView>
-    </NotFound>
-</Router>
+﻿<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <Authorizing>Please wait a moment ..... </Authorizing>
+            </AuthorizeRouteView>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <div class="notfound-container">
+                <h1 class="neon-404">404</h1>
+                <p class="neon-message">Not Found</p>
+                <a class="neon-button" href="/">Go home page</a>
+            </div>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>
+
+<style>
+    .notfound-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        background-color: #0d0d0d;
+        font-family: 'Orbitron', sans-serif;
+        text-align: center;
+    }
+
+    .neon-404 {
+        font-size: 6rem;
+        color: #ff004c;
+        text-shadow: 0 0 10px #ff004c, 0 0 20px #ff004c, 0 0 40px #ff004c;
+        animation: flicker 1.2s infinite alternate;
+    }
+
+    .neon-message {
+        font-size: 1.5rem;
+        color: #00fff7;
+        text-shadow: 0 0 10px #00fff7;
+        margin-bottom: 2rem;
+    }
+
+    .neon-button {
+        padding: 0.75rem 1.5rem;
+        border: 2px solid #00fff7;
+        color: #00fff7;
+        text-decoration: none;
+        border-radius: 5px;
+        text-shadow: 0 0 5px #00fff7;
+        transition: 0.3s;
+    }
+
+        .neon-button:hover {
+            background-color: #00fff7;
+            color: #0d0d0d;
+            text-shadow: none;
+        }
+
+    @@keyframes flicker {
+        0% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.6;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+</style>

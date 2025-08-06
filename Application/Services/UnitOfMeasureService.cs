@@ -1,11 +1,6 @@
 ﻿using Application.Interfaces;
+using Application.Repositories;
 using Domain.Entities;
-using Infrastructure.Repositories.Contracts;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Services;
 public class UnitOfMeasureService : GenericService<UnitOfMeasure>, IUnitOfMeasureService

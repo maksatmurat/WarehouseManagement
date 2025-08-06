@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Application.DTOs;
+namespace Domain.DTOs;
 
 public class Register : AccountBase
 {

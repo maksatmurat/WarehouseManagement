@@ -1,6 +1,5 @@
 ﻿using Application.Interfaces;
-using Infrastructure.Repositories.Contracts;
-using Microsoft.EntityFrameworkCore;
+using Application.Repositories;
 
 namespace Application.Services;
 

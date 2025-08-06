@@ -1,0 +1,33 @@
+﻿@page "/resources"
+@inject IGenericService<Resource> ResourceService
+
+<h3>Resources Listesi</h3>
+
+@if (resources == null)
+{
+    <p>Yükleniyor...</p>
+}
+else if (!resources.Any())
+{
+    <p>Hiç resource bulunamadı.</p>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var resource in resources)
+        {
+            <li class="list-group-item">
+                @resource.Name
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    private List<Resource> resources;
+
+    protected override async Task OnInitializedAsync()
+    {
+        resources = await ResourceService.GetAllAsync();
+    }
+}

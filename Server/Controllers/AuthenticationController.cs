@@ -1,4 +1,4 @@
-﻿using Application.DTOs;
+﻿using Domain.DTOs;
 using Infrastructure.Repositories.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

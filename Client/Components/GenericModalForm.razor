@@ -1,0 +1,61 @@
+﻿@typeparam TModel where TModel : class, new()
+
+@if (IsOpen)
+{
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <EditForm Model="Model" OnValidSubmit="HandleValidSubmit">
+                    <div class="modal-header">
+                        <h5 class="modal-title">@Title</h5>
+                        <button type="button" class="btn-close" @onclick="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        @foreach (var prop in typeof(TModel).GetProperties())
+                        {
+                            if (prop.Name == "Id") continue;
+
+                            <div class="mb-3">
+                                <label class="form-label">@prop.Name</label>
+                                <InputText class="form-control"
+                                           Value="@(prop.GetValue(Model)?.ToString() ?? string.Empty)"
+                                           ValueChanged="val => prop.SetValue(Model, val)"
+                                           ValueExpression="@(() => (string)prop.GetValue(Model)!)" />
+                            </div>
+                        }
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Kaydet</button>
+                        <button type="button" class="btn btn-secondary" @onclick="Close">İptal</button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public string Title { get; set; } = "Yeni Kayıt";
+    [Parameter] public TModel Model { get; set; } = new();
+    [Parameter] public EventCallback<TModel> OnSave { get; set; }
+
+    private bool IsOpen { get; set; }
+
+    public void Open()
+    {
+        IsOpen = true;
+        StateHasChanged();
+    }
+
+    public void Close()
+    {
+        IsOpen = false;
+        StateHasChanged();
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        await OnSave.InvokeAsync(Model);
+        Close();
+    }
+}

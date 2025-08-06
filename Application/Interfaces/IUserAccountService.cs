@@ -2,13 +2,13 @@
 using Domain.Entities;
 using Domain.Responses;
 
+namespace Application.Interfaces;
 
-namespace Infrastructure.Repositories.Contracts;
-public interface IUserAccount
+public interface IUserAccountService
 {
     Task<GeneralResponse> CreateAsync(Register user);
     Task<LoginResponse> SignInAsync(Login user);
-    Task<LoginResponse> RefreshTokenAsync(RefreshToken token);
+    Task<LoginResponse> RefreshTokenAsync(RefreshToken Token);
     Task<List<ManageUser>> GetUsers();
     Task<GeneralResponse> UpdateUser(ManageUser user);
     Task<List<SystemRole>> GetRoles();
