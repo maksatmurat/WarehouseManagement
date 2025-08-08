@@ -1,0 +1,90 @@
+﻿@page "/resources"
+    @inject IGenericService<Resource> ResourceService
+
+    <h3>Ресурсы</h3>
+
+    <div class="mb-3">
+        @if (!showArchive)
+        {
+            <button class="btn btn-success me-2" @onclick="NavigateToAdd">Добавить</button>
+            <button class="btn btn-warning" @onclick="ShowArchived">К архиву</button>
+        }
+        else
+        {
+            <button class="btn btn-primary" @onclick="ShowActive">К рабочим</button>
+        }
+    </div>
+
+    <GenericTable TModel="Resource" Items="resources" OnRowClick="EditResource" />
+
+
+
+    @code {
+        private List<Resource> allResources = new();
+        private List<Resource> resources = new();
+        private Resource selectedResource = new();
+
+        private string modalTitle = "Ресурс";
+
+        private bool showArchive = false;
+
+        protected override async Task OnInitializedAsync()
+        {
+            await LoadAllResources();
+            FilterResources();
+        }
+        private void NavigateToAdd()
+        {
+            NavManager.NavigateTo("/resource/add");
+        }
+        private void EditResource(Resource resource)
+        {
+            NavManager.NavigateTo($"/resources/update/{resource.Id}");
+        }
+        private async Task LoadAllResources()
+        {
+            allResources = await ResourceService.GetAllAsync();
+        }
+
+        private void FilterResources()
+        {
+            resources = allResources
+                        .Where(r => r.IsActive != showArchive)
+                        .ToList();
+        }
+
+        private async Task ShowArchived()
+        {
+            showArchive = true;
+            FilterResources();
+        }
+
+        private async Task ShowActive()
+        {
+            showArchive = false;
+            FilterResources();
+        }
+
+
+        private async Task SaveResource(Resource resource)
+        {
+            await ResourceService.CreateAsync(resource);
+            await LoadAllResources();
+        }
+
+
+        private async Task DeleteResource(Resource resource)
+        {
+            await ResourceService.DeleteAsync(resource.Id);
+            await LoadAllResources();
+            FilterResources();
+        }
+
+        private async Task ArchiveResource(Resource resource)
+        {
+            resource.IsActive = false;
+            await ResourceService.UpdateAsync(resource.Id, resource);
+            await LoadAllResources();
+            FilterResources();
+        }
+    }

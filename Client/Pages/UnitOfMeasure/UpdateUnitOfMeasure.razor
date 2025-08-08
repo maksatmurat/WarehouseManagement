@@ -1,0 +1,9 @@
+﻿@page "/unitofmeasure/update/{id:guid}"
+
+
+<GenericUpdate TEntity="UnitOfMeasure" id="id" />
+
+@code{
+    [Parameter]
+    public Guid id { get; set; }
+}

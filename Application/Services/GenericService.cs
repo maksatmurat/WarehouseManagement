@@ -44,4 +44,16 @@ public class GenericService<TEntity> : IGenericService<TEntity> where TEntity : 
         await _repository.SaveChangesAsync();
         return true;
     }
+
+    public async Task<bool> ExistsByNameAsync(string name)
+    {
+        var items = await _repository.GetAllAsync();
+        var nameProp = typeof(TEntity).GetProperty("Name");
+        if (nameProp == null)
+            throw new InvalidOperationException("TEntity does not have a 'Name' property.");
+
+        return items.Any(x => 
+            nameProp.GetValue(x)?.ToString()?.Equals(name, StringComparison.OrdinalIgnoreCase) == true
+        );
+    }
 }

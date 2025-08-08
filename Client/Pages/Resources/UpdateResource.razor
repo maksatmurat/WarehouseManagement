@@ -1,0 +1,9 @@
+﻿@page "/resources/update/{id:guid}"
+
+
+<GenericUpdate TEntity="Resource" id="id" />
+
+@code{
+    [Parameter]
+    public Guid id { get; set; }
+}

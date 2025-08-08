@@ -14,7 +14,7 @@
             </div>
 
 
-            <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+            <div class="@NavMenuCssClass " @onclick="ToggleNavMenu">
                 <nav class="nav flex-column">
                     <div class="group">
                         <h4 class="card-header text-white px-3" style="padding-top:1rem">Склад</h4>
@@ -38,15 +38,14 @@
                         <h4 class="card-header text-white px-3" style="padding-top:1rem">Справочники</h4>
 
                         <div class="nav-item px-3">
-                            <NavLink class="nav-link" href="weather">
+                            <NavLink class="nav-link" href="/clients">
                                 Клиенты
                             </NavLink>
                         </div>
 
                         <div class="nav-item px-3">
-                            <NavLink class="nav-link" href="weather2">
+                            <NavLink class="nav-link" href="/UnitOfMeasures">
                                 Единицы измерения
-
                             </NavLink>
                         </div>
 
@@ -58,8 +57,7 @@
                     </div>
                     <div class="group">
                         <button class="btn btn-danger btn-sm fw-bold w-100 "  @onclick="LogoutClicked">
-                            <i class="bi bi-box-arrow-left"></i>
-                            Logout
+                            Выйти 
                         </button>
                     </div>
                 </nav>

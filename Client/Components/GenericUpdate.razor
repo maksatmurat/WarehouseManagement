@@ -1,0 +1,146 @@
+﻿@typeparam TEntity where TEntity : class, new()
+
+@page "/update/{id:guid}"
+@inject IGenericService<TEntity> Service
+
+<h3>@outTitle</h3>
+
+@if (isLoading)
+{
+    <p>Загрузка...</p>
+}
+else if (Entity == null)
+{
+    <p class="text-danger">Элемент не найден.</p>
+}
+else
+{
+    <EditForm Model="Entity">
+        <DataAnnotationsValidator />
+        <div class="form-group">
+            <label for="nameInput">Наименование</label>
+            <InputText class="form-control" id="nameInput" @bind-Value="EntityName" oninput="@CheckNameExists" placeholder="Введите название" />
+            <ValidationMessage For="@(()=>EntityName)" />
+            @if (isNameExists)
+            {
+                <div class="text-danger">Такое наименование уже существует!</div>
+            }
+            @if (source == "client")
+            {
+                <label for="addressInput">Адрес</label>
+                <InputText class="form-control" id="addressInput" @bind-Value="EntityAddress" placeholder="Введите название" />
+                <ValidationMessage For="@(()=>EntityAddress)" />
+            }
+        </div>
+
+        <div class="mt-4">
+            <button class="btn btn-primary me-2" disabled="@isNameExists" @onclick="Update">Сохранить</button>
+            @if (HasIsActive && (bool)(typeof(TEntity).GetProperty("IsActive")?.GetValue(Entity) ?? false))
+            {
+                <button class="btn btn-warning me-2" @onclick="ToggleActive">Архивировать</button>
+            }
+            else if (HasIsActive)
+            {
+                <button class="btn btn-success me-2" @onclick="ToggleActive">В работу</button>
+            }
+
+            <button class="btn btn-danger me-2"  @onclick="Delete">Удалить</button>
+            <button class="btn btn-secondary" @onclick="GoBack">Назад</button>
+        </div>
+    </EditForm>
+}
+@code {
+    [Parameter] public Guid id { get; set; }
+    public string outTitle = "";
+    public string source = "";
+    private TEntity? Entity;
+    private bool isLoading = true;
+    private bool HasIsActive => typeof(TEntity).GetProperty("IsActive") != null;
+    private bool isNameExists = false;
+
+    private string EntityName
+    {
+        get => typeof(TEntity).GetProperty("Name")?.GetValue(Entity)?.ToString() ?? string.Empty;
+        set => typeof(TEntity).GetProperty("Name")?.SetValue(Entity, value);
+    }
+    private string EntityAddress
+    {
+        get => typeof(TEntity).GetProperty("Address")?.GetValue(Entity)?.ToString() ?? string.Empty;
+        set => typeof(TEntity).GetProperty("Address")?.SetValue(Entity, value);
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        source = $"{typeof(TEntity).Name.ToLower()}";
+        outTitle = "Редактировать " + source switch
+        {
+            "resource" => "ресурс",
+            "unitofnumber" => "единицу измерения",
+            "client" => "клиента",
+            _ => source
+        };
+
+        Entity = await Service.GetByIdAsync(id);
+        isLoading = false;
+    }
+    private async Task CheckNameExists(ChangeEventArgs e)
+    {
+        var name = e.Value?.ToString();
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            isNameExists = await Service.ExistsByNameAsync(name);
+        }
+        else
+        {
+            isNameExists = false;
+        }
+        StateHasChanged();
+    }
+    private async Task Update()
+    {
+        if (!string.IsNullOrWhiteSpace(EntityName))
+        {
+            var idProp = typeof(TEntity).GetProperty("Id");
+            var entityId = idProp?.GetValue(Entity);
+
+            if (entityId != null)
+                await Service.UpdateAsync((Guid)entityId, Entity);
+
+            GoBack();
+        }
+    }
+
+    private async Task ToggleActive()
+    {
+        if (Entity != null && HasIsActive)
+        {
+            var isActiveProp = typeof(TEntity).GetProperty("IsActive");
+            bool current = (bool)(isActiveProp?.GetValue(Entity) ?? false);
+            isActiveProp?.SetValue(Entity, !current);
+
+            var idProp = typeof(TEntity).GetProperty("Id");
+            var entityId = idProp?.GetValue(Entity);
+
+            if (entityId != null)
+                await Service.UpdateAsync((Guid)entityId, Entity);
+
+            GoBack();
+        }
+    }
+
+    private async Task Delete()
+    {
+        var idProp = typeof(TEntity).GetProperty("Id");
+        var entityId = idProp?.GetValue(Entity);
+
+        if (entityId != null)
+        {
+            await Service.DeleteAsync((Guid)entityId);
+            GoBack();
+        }
+    }
+
+    private void GoBack()
+    {
+        NavManager.NavigateTo($"/{typeof(TEntity).Name.ToLower()}s");
+    }
+}

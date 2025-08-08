@@ -1,6 +1,8 @@
-﻿namespace Domain.Entities;
+﻿using Domain.DTOs;
 
-public class Resource
+namespace Domain.Entities;
+
+public class Resource:IHasName
 {
     public Guid Id { get; set; }
     public string Name { get; set; } = null!;

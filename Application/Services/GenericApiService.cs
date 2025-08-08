@@ -50,4 +50,17 @@ public class GenericApiService<TEntity> : IGenericService<TEntity> where TEntity
         var response = await _httpClient.DeleteAsync($"{_endpoint}/{id}");
         return response.IsSuccessStatusCode;
     }
+
+    public async Task<bool> ExistsByNameAsync(string name)
+    {
+        var items = await _httpClient.GetFromJsonAsync<List<TEntity>>(_endpoint)
+               ?? new List<TEntity>();
+        var nameProp = typeof(TEntity).GetProperty("Name");
+        if (nameProp == null)
+            throw new InvalidOperationException("TEntity does not have a 'Name' property.");
+
+        return items.Any(x =>
+            nameProp.GetValue(x)?.ToString()?.Equals(name, StringComparison.OrdinalIgnoreCase) == true
+        );
+    }
 }

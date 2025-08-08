@@ -12,21 +12,21 @@
                         <div class="row">
                             <div class="col-lg-4 col-md-4 col-sm-4"></div>
                             <div class="col-lg-4 col-md-4 col-sm-4  d-flex justify-content-center">
-                                <img style="border-radius:20px;" alt="X" src="/images/images.png" height="50" width="50" />
+                                <img style="border-radius:20px;" alt="X" src="/images/authimage.png" height="50" width="50" />
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-4"></div>
                         </div>
-                        <i class="bi bi-person-circle me-2"></i> Please Login
+                        <i class="bi bi-person-circle me-2"></i> Вход в Систему
                     </div>
                     <div class="card-body ">
-                        <span style="color:#808080;pointer-events:none">Email : admin@example.com | password : admin123</span>
+                        <span style="color:#808080;pointer-events:none">Электронная почта: admin@example.com | пароль : admin123</span>
                         <div class="form-group mt-1 mb-3">
-                            <label for="email" class="form-label">E-mail</label>
+                            <label for="email" class="form-label">Электронная почта</label>
                             <InputText @bind-Value="User.Email" id="email" class="form-control" placeholder="exam@mail.ru" />
                         </div>
 
                         <div class="form-group mb-3">
-                            <label for="password" class="form-label">Şifre</label>
+                            <label for="password" class="form-label">Пароль</label>
                             <InputText @bind-Value="User.Password" id="password" type="password" class="form-control" placeholder="••••••••" />
                         </div>
 
@@ -35,14 +35,14 @@
                         <div class="row">
                             <div class="col-lg-8 col-md-8 col-sm-12">
                                 <span class="text-center">
-                                    Don`t have account?
-                                    <a href="identity/account/register" class="btn-link">Sign Up</a>
+                                    У вас нет аккаунта?
+                                    <a href="identity/account/register" class="btn-link">Зарегистрироваться</a>
                                 </span>
                             </div>
                             <div class="col-lg-4 col-md-4 col-sm-12">
                                 <div class="d-grid form-group mt-1">
                                     <button type="submit" style="border: 2px solid black" class="btn float-end">
-                                        <i class="bi bi-box-arrow-in-right me-2"></i> Login
+                                        <i class="bi bi-box-arrow-in-right me-2"></i> Войти
                                     </button>
 
                                 </div>

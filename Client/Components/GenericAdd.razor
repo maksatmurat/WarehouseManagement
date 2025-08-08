@@ -1,0 +1,96 @@
+﻿@typeparam TEntity where TEntity : class, new()
+@inject IGenericService<TEntity> Service
+
+<h3>@outTitle</h3>
+
+
+<EditForm Model="Entity">
+    <DataAnnotationsValidator />
+    <div class="form-group">
+        <label for="nameInput">Наименование</label>
+        <InputText class="form-control" id="nameInput" @bind-Value="EntityName" oninput="@CheckNameExists"  placeholder="Введите название" />
+        <ValidationMessage For="@(()=>EntityName)" />
+        @if (isNameExists)
+        {
+            <div class="text-danger">Такое наименование уже существует!</div>
+        }
+        @if (source == "client")
+        {
+
+            <label for="addressInput">Адрес</label>
+            <InputText class="form-control" id="addressInput" @bind-Value="EntityAddress" placeholder="Введите название" />
+            <ValidationMessage For="@(()=>EntityAddress)" />
+        }
+    </div>
+</EditForm>
+
+
+
+<button class="btn btn-success mt-3" @onclick="Save" disabled="@isNameExists">Сохранить</button>
+<button class="btn btn-secondary mt-3 ms-2" @onclick="GoBack">Назад</button>
+
+@code {
+
+    public string outTitle = "";
+    public string source = "";
+    private TEntity Entity { get; set; } = new();
+    private bool isNameExists = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        source = $"{typeof(TEntity).Name.ToLower()}";
+        outTitle = "Добавить " + source switch
+        {
+            "resource" => "ресурс",
+            "unitofnumber" => "единицу измерения",
+            "client" => "клиента",
+            _ => source
+        };
+    }
+    private string EntityName
+    {
+        get => typeof(TEntity).GetProperty("Name")?.GetValue(Entity)?.ToString() ?? string.Empty;
+        set => typeof(TEntity).GetProperty("Name")?.SetValue(Entity, value);
+    }
+
+    private string EntityAddress
+    {
+        get => typeof(TEntity).GetProperty("Address")?.GetValue(Entity)?.ToString() ?? string.Empty;
+        set => typeof(TEntity).GetProperty("Address")?.SetValue(Entity, value);
+    }
+
+    private async Task CheckNameExists(ChangeEventArgs e)
+    {
+        var name = e.Value?.ToString();
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            isNameExists = await Service.ExistsByNameAsync(name);
+        }
+        else
+        {
+            isNameExists = false;
+        }
+        StateHasChanged();
+    }
+
+    private async Task Save()
+    {
+        var nameProp = typeof(TEntity).GetProperty("Name");
+        if (nameProp == null || string.IsNullOrWhiteSpace(EntityName))
+            return;
+
+        var isActiveProp = typeof(TEntity).GetProperty("IsActive");
+        if (isActiveProp != null && isActiveProp.PropertyType == typeof(bool))
+        {
+            isActiveProp.SetValue(Entity, true);
+        }
+
+        await Service.CreateAsync(Entity);
+        GoBack();
+    }
+
+    private void GoBack()
+    {
+        NavManager.NavigateTo($"/{typeof(TEntity).Name.ToLower()}s");
+    }
+}

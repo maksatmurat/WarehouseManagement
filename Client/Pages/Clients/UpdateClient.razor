@@ -1,0 +1,9 @@
+﻿@page "/client/update/{id:guid}"
+
+
+<GenericUpdate TEntity="Client" id="id" />
+
+@code{
+    [Parameter]
+    public Guid id { get; set; }
+}
