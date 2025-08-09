@@ -14,10 +14,10 @@ public class ShipmentResourceController : GenericController<ShipmentResource>
         _service = service;
     }
 
-    [HttpPut("{id}/quantity")]
-    public async Task<IActionResult> UpdateQuantity(Guid id, [FromBody] decimal quantity)
-    {
-        var result = await _service.UpdateResourceQuantityAsync(id, quantity);
-        return result ? Ok() : BadRequest("Ошибка при обновлении количества.");
-    }
+    //[HttpPut("{id}/quantity")]
+    //public async Task<IActionResult> UpdateQuantity(Guid id, [FromBody] decimal quantity)
+    //{
+    //    var result = await _service.UpdateResourceQuantityAsync(id, quantity);
+    //    return result ? Ok() : BadRequest("Ошибка при обновлении количества.");
+    //}
 }

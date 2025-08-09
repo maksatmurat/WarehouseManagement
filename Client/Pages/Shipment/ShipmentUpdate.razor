@@ -1,0 +1,138 @@
+﻿@page "/shipments/update/{Id:guid}"
+
+@inject IGenericService<Client> ClientService
+@inject IGenericService<Resource> ResourceService
+@inject IGenericService<UnitOfMeasure> UnitService
+@inject IGenericService<ShipmentDocument> ShipmentDocumentService
+@inject IGenericService<ShipmentResource> ShipmentResourceService
+
+<h3>Отгрузка</h3>
+
+<EditForm Model="@shipmentDocument" OnValidSubmit="UpdateShipment">
+    <InputText @bind-Value="shipmentDocument.Number" placeholder="Номер" class="form-control mb-2" />
+    <InputSelect @bind-Value="shipmentDocument.ClientId" class="form-control mb-2">
+        <option value="">Клиент</option>
+        @foreach (var client in clients)
+        {
+            <option value="@client.Id">@client.Name</option>
+        }
+    </InputSelect>
+    <InputDate @bind-Value="shipmentDocument.Date" class="form-control mb-2" />
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Ресурс</th>
+                <th>Единица измерения</th>
+                <th>Количество</th>
+                <th>Доступно</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var res in shipmentResources)
+            {
+                <tr>
+                    <td>
+                        <InputSelect @bind-Value="res.ResourceId" class="form-control">
+                            <option value="">Выберите</option>
+                            @foreach (var r in resources)
+                            {
+                                <option value="@r.Id">@r.Name</option>
+                            }
+                        </InputSelect>
+                    </td>
+                    <td>
+                        <InputSelect @bind-Value="res.UnitOfMeasureId" class="form-control">
+                            <option value="">Выберите</option>
+                            @foreach (var u in units)
+                            {
+                                <option value="@u.Id">@u.Name</option>
+                            }
+                        </InputSelect>
+                    </td>
+                    <td>
+                        <InputNumber @bind-Value="res.Quantity" class="form-control" />
+                    </td>
+                    <td>
+                        <InputNumber @bind-Value="res.AvailabilityNumber" class="form-control" />
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger" @onclick="() => RemoveResource(res)">-</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <button type="button" class="btn btn-secondary" @onclick="AddResource">+ Добавить строку</button>
+    <div class="mt-3">
+        <button type="submit" class="btn btn-success">Сохранить</button>
+        <button type="button" class="btn btn-success ms-2" @onclick="UpdateAndSign">Сохранить и подписать</button>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private ShipmentDocument shipmentDocument = new();
+    private List<ShipmentResource> shipmentResources = new();
+    private List<Client> clients = new();
+    private List<Resource> resources = new();
+    private List<UnitOfMeasure> units = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        clients = (await ClientService.GetAllAsync()).Where(x => x.IsActive).ToList();
+        resources = (await ResourceService.GetAllAsync()).Where(x => x.IsActive).ToList();
+        units = (await UnitService.GetAllAsync()).Where(x => x.IsActive).ToList();
+
+        // Mevcut dokümanı yükle
+        shipmentDocument = await ShipmentDocumentService.GetByIdAsync(Id);
+
+        // Ona bağlı kaynaklar
+        shipmentResources = (await ShipmentResourceService.GetAllAsync())
+                            .Where(r => r.ShipmentDocumentId == Id)
+                            .ToList();
+
+        if (!shipmentResources.Any())
+            AddResource();
+    }
+
+    private void AddResource()
+    {
+        shipmentResources.Add(new ShipmentResource());
+    }
+
+    private void RemoveResource(ShipmentResource res)
+    {
+        shipmentResources.Remove(res);
+    }
+
+    private async Task UpdateShipment()
+    {
+        // Document update
+        await ShipmentDocumentService.UpdateAsync(shipmentDocument.Id,shipmentDocument);
+
+        // Kaynakları temizleyip tekrar eklemek veya tek tek update yapmak
+        var existingRes = (await ShipmentResourceService.GetAllAsync())
+                          .Where(r => r.ShipmentDocumentId == Id)
+                          .ToList();
+
+        foreach (var old in existingRes)
+            await ShipmentResourceService.DeleteAsync(old.Id);
+
+        foreach (var res in shipmentResources)
+        {
+            res.ShipmentDocumentId = Id;
+            await ShipmentResourceService.CreateAsync(res);
+        }
+
+        NavManager.NavigateTo("/shipments");
+    }
+
+    private async Task UpdateAndSign()
+    {
+        shipmentDocument.IsSigned = true;
+        await UpdateShipment();
+    }
+}

@@ -1,92 +1,93 @@
 ﻿@page "/UnitOfMeasures"
 @inject IGenericService<UnitOfMeasure> UnitOfMeasureService
+    <PageTitle>Единицы измерения</PageTitle>
 
-<h3>
-    Единицы измерения
-</h3>
+    <h3>
+        Единицы измерения
+    </h3>
 
-<div class="mb-3">
-    @if (!showArchive)
-    {
-        <button class="btn btn-success me-2" @onclick="NavigateToAdd">Добавить</button>
-        <button class="btn btn-warning" @onclick="ShowArchived">К архиву</button>
+    <div class="mb-3">
+        @if (!showArchive)
+        {
+            <button class="btn btn-success me-2" @onclick="NavigateToAdd">Добавить</button>
+            <button class="btn btn-warning" @onclick="ShowArchived">К архиву</button>
+        }
+        else
+        {
+            <button class="btn btn-primary" @onclick="ShowActive">К рабочим</button>
+        }
+    </div>
+
+    <GenericTable TModel="UnitOfMeasure" Items="unitOfMeasures" OnRowClick="EditResource" />
+
+
+
+    @code {
+        private List<UnitOfMeasure> allUnitOfMeasures = new();
+        private List<UnitOfMeasure> unitOfMeasures = new();
+        private UnitOfMeasure selectedUnitOfMeasure = new();
+
+        private string modalTitle = "Единицы измерения";
+
+        private bool showArchive = false;
+
+        protected override async Task OnInitializedAsync()
+        {
+            await LoadAllUnitOfMeasure();
+            FilterUnitOfMeasures();
+        }
+        private void NavigateToAdd()
+        {
+            NavManager.NavigateTo("/unitofmeasure/add");
+        }
+        private void EditResource(UnitOfMeasure unitOfMeasure)
+        {
+            NavManager.NavigateTo($"/unitofmeasure/update/{unitOfMeasure.Id}");
+        }
+        private async Task LoadAllUnitOfMeasure()
+        {
+            allUnitOfMeasures = await UnitOfMeasureService.GetAllAsync();
+        }
+
+        private void FilterUnitOfMeasures()
+        {
+            unitOfMeasures = allUnitOfMeasures
+                        .Where(r => r.IsActive != showArchive)
+                        .ToList();
+        }
+
+        private async Task ShowArchived()
+        {
+            showArchive = true;
+            FilterUnitOfMeasures();
+        }
+
+        private async Task ShowActive()
+        {
+            showArchive = false;
+            FilterUnitOfMeasures();
+        }
+
+
+        private async Task SaveResource(UnitOfMeasure UnitOfMeasure)
+        {
+            await UnitOfMeasureService.CreateAsync(UnitOfMeasure);
+            await LoadAllUnitOfMeasure();
+        }
+
+
+        private async Task DeleteResource(UnitOfMeasure UnitOfMeasure)
+        {
+            await UnitOfMeasureService.DeleteAsync(UnitOfMeasure.Id);
+            await LoadAllUnitOfMeasure();
+            FilterUnitOfMeasures();
+        }
+
+        private async Task ArchiveResource(UnitOfMeasure UnitOfMeasure)
+        {
+            UnitOfMeasure.IsActive = false;
+            await UnitOfMeasureService.UpdateAsync(UnitOfMeasure.Id, UnitOfMeasure);
+            await LoadAllUnitOfMeasure();
+            FilterUnitOfMeasures();
+        }
     }
-    else
-    {
-        <button class="btn btn-primary" @onclick="ShowActive">К рабочим</button>
-    }
-</div>
-
-<GenericTable TModel="UnitOfMeasure" Items="unitOfMeasures" OnRowClick="EditResource" />
-
-
-
-@code {
-    private List<UnitOfMeasure> allUnitOfMeasures = new();
-    private List<UnitOfMeasure> unitOfMeasures = new();
-    private UnitOfMeasure selectedUnitOfMeasure = new();
-
-    private string modalTitle = "Единицы измерения";
-
-    private bool showArchive = false;
-
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadAllUnitOfMeasure();
-        FilterUnitOfMeasures();
-    }
-    private void NavigateToAdd()
-    {
-        NavManager.NavigateTo("/unitofmeasure/add");
-    }
-    private void EditResource(UnitOfMeasure unitOfMeasure)
-    {
-        NavManager.NavigateTo($"/unitofmeasure/update/{unitOfMeasure.Id}");
-    }
-    private async Task LoadAllUnitOfMeasure()
-    {
-        allUnitOfMeasures = await UnitOfMeasureService.GetAllAsync();
-    }
-
-    private void FilterUnitOfMeasures()
-    {
-        unitOfMeasures = allUnitOfMeasures
-                    .Where(r => r.IsActive != showArchive)
-                    .ToList();
-    }
-
-    private async Task ShowArchived()
-    {
-        showArchive = true;
-        FilterUnitOfMeasures();
-    }
-
-    private async Task ShowActive()
-    {
-        showArchive = false;
-        FilterUnitOfMeasures();
-    }
-
-
-    private async Task SaveResource(UnitOfMeasure UnitOfMeasure)
-    {
-        await UnitOfMeasureService.CreateAsync(UnitOfMeasure);
-        await LoadAllUnitOfMeasure();
-    }
-
-
-    private async Task DeleteResource(UnitOfMeasure UnitOfMeasure)
-    {
-        await UnitOfMeasureService.DeleteAsync(UnitOfMeasure.Id);
-        await LoadAllUnitOfMeasure();
-        FilterUnitOfMeasures();
-    }
-
-    private async Task ArchiveResource(UnitOfMeasure UnitOfMeasure)
-    {
-        UnitOfMeasure.IsActive = false;
-        await UnitOfMeasureService.UpdateAsync(UnitOfMeasure.Id, UnitOfMeasure);
-        await LoadAllUnitOfMeasure();
-        FilterUnitOfMeasures();
-    }
-}

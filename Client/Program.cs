@@ -35,8 +35,8 @@ internal class Program
         builder.Services.AddScoped<LocalStorageService>();
         builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
         builder.Services.AddScoped<IUserAccountService, UserAccountService>();
-
         builder.Services.AddScoped(typeof(IGenericService<>), typeof(GenericApiService<>));
+        builder.Services.AddScoped<IShipmentService, ShipmentServiceHttp>();
 
 
         await builder.Build().RunAsync();

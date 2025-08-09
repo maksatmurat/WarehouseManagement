@@ -24,6 +24,8 @@
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Pages\Balance\" />
+    <Folder Include="Pages\Receipt\" />
     <Folder Include="Services\" />
   </ItemGroup>
 

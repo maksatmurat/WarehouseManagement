@@ -1,90 +1,92 @@
 ﻿@page "/clients"
 @inject IGenericService<Client> ClientService
 
-<h3>Клиент</h3>
+<PageTitle>Клиент</PageTitle>
 
-<div class="mb-3">
-    @if (!showArchive)
-    {
-        <button class="btn btn-success me-2" @onclick="NavigateToAdd">Добавить</button>
-        <button class="btn btn-warning" @onclick="ShowArchived">К архиву</button>
+    <h3>Клиент</h3>
+
+    <div class="mb-3">
+        @if (!showArchive)
+        {
+            <button class="btn btn-success me-2" @onclick="NavigateToAdd">Добавить</button>
+            <button class="btn btn-warning" @onclick="ShowArchived">К архиву</button>
+        }
+        else
+        {
+            <button class="btn btn-primary" @onclick="ShowActive">К рабочим</button>
+        }
+    </div>
+
+    <GenericTable TModel="Client" Items="clients" OnRowClick="EditResource" />
+
+
+
+    @code {
+        private List<Client> allClients = new();
+        private List<Client> clients = new();
+        private Client selectedClient = new();
+
+        private string modalTitle = "Клиент";
+
+        private bool showArchive = false;
+
+        protected override async Task OnInitializedAsync()
+        {
+            await LoadAllClient();
+            FilterClients();
+        }
+        private void NavigateToAdd()
+        {
+            NavManager.NavigateTo("/client/add");
+        }
+        private void EditResource(Client client)
+        {
+            NavManager.NavigateTo($"/client/update/{client.Id}");
+        }
+        private async Task LoadAllClient()
+        {
+            allClients = await ClientService.GetAllAsync();
+        }
+
+        private void FilterClients()
+        {
+            clients = allClients
+                        .Where(r => r.IsActive != showArchive)
+                        .ToList();
+        }
+
+        private async Task ShowArchived()
+        {
+            showArchive = true;
+            FilterClients();
+        }
+
+        private async Task ShowActive()
+        {
+            showArchive = false;
+            FilterClients();
+        }
+
+
+        private async Task SaveResource(Client client)
+        {
+            await ClientService.CreateAsync(client);
+            await LoadAllClient();
+        }
+
+
+        private async Task DeleteResource(Client client)
+        {
+            await ClientService.DeleteAsync(client.Id);
+            await LoadAllClient();
+            FilterClients();
+        }
+
+        private async Task ArchiveResource(Client client)
+        {
+            client.IsActive = false;
+            await ClientService.UpdateAsync(client.Id, client);
+            await LoadAllClient();
+            FilterClients();
+        }
     }
-    else
-    {
-        <button class="btn btn-primary" @onclick="ShowActive">К рабочим</button>
-    }
-</div>
-
-<GenericTable TModel="Client" Items="clients" OnRowClick="EditResource" />
-
-
-
-@code {
-    private List<Client> allClients = new();
-    private List<Client> clients = new();
-    private Client selectedClient = new();
-
-    private string modalTitle = "Клиент";
-
-    private bool showArchive = false;
-
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadAllClient();
-        FilterClients();
-    }
-    private void NavigateToAdd()
-    {
-        NavManager.NavigateTo("/client/add");
-    }
-    private void EditResource(Client client)
-    {
-        NavManager.NavigateTo($"/client/update/{client.Id}");
-    }
-    private async Task LoadAllClient()
-    {
-        allClients = await ClientService.GetAllAsync();
-    }
-
-    private void FilterClients()
-    {
-        clients = allClients
-                    .Where(r => r.IsActive != showArchive)
-                    .ToList();
-    }
-
-    private async Task ShowArchived()
-    {
-        showArchive = true;
-        FilterClients();
-    }
-
-    private async Task ShowActive()
-    {
-        showArchive = false;
-        FilterClients();
-    }
-
-
-    private async Task SaveResource(Client client)
-    {
-        await ClientService.CreateAsync(client);
-        await LoadAllClient();
-    }
-
-
-    private async Task DeleteResource(Client client)
-    {
-        await ClientService.DeleteAsync(client.Id);
-        await LoadAllClient();
-        FilterClients();
-    }
-
-    private async Task ArchiveResource(Client client)
-    {
-        client.IsActive = false;
-        await ClientService.UpdateAsync(client.Id, client);
-        await LoadAllClient();
-        FilterClients();
-    }
-}

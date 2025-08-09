@@ -106,6 +106,7 @@ public class CommonDefinition:AppDefinition
         builder.Services.AddScoped<IReceiptResourceService, ReceiptResourceService>();
         builder.Services.AddScoped<IShipmentDocumentService, ShipmentDocumentService>();
         builder.Services.AddScoped<IShipmentResourceService, ShipmentResourceService>();
+        builder.Services.AddScoped<IShipmentService, ShipmentService>();
 
     }
 
